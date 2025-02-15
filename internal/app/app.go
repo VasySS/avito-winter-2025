@@ -19,7 +19,7 @@ import (
 func Run(ctx context.Context, cfg config.Config) error {
 	closer := NewCloser()
 
-	pg, err := newPostgres(ctx, closer, cfg.DBConnURL)
+	pg, err := newPostgres(ctx, closer, cfg)
 	if err != nil {
 		return err
 	}
@@ -28,7 +28,7 @@ func Run(ctx context.Context, cfg config.Config) error {
 
 	r := httpRouter.NewRouter()
 
-	go startHTTP(r, closer)
+	go startHTTP(r, closer, cfg.ServerPort)
 
 	<-ctx.Done()
 	slog.Info("stopping...")
@@ -43,9 +43,9 @@ func Run(ctx context.Context, cfg config.Config) error {
 	return nil
 }
 
-func startHTTP(r http.Handler, closer *Closer) {
+func startHTTP(r http.Handler, closer *Closer, port string) {
 	server := &http.Server{
-		Addr:         ":8080",
+		Addr:         ":" + port,
 		Handler:      r,
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 5 * time.Second,
@@ -58,7 +58,16 @@ func startHTTP(r http.Handler, closer *Closer) {
 	}
 }
 
-func newPostgres(ctx context.Context, closer *Closer, connURL string) (*postgres.Facade, error) {
+func newPostgres(ctx context.Context, closer *Closer, cfg config.Config) (*postgres.Facade, error) {
+	connURL := fmt.Sprintf(
+		"host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
+		cfg.DatabaseHost,
+		cfg.DatabasePort,
+		cfg.DatabaseUser,
+		cfg.DatabasePassword,
+		cfg.DatabaseName,
+	)
+
 	pool, err := pgxpool.New(ctx, connURL)
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to database: %w", err)
