@@ -12,6 +12,8 @@ import (
 	"avito-task/internal/config"
 	httpRouter "avito-task/internal/controller/http"
 	"avito-task/internal/repository/postgres"
+	"avito-task/internal/usecase/auth"
+	"avito-task/internal/usecase/merch"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -24,9 +26,10 @@ func Run(ctx context.Context, cfg config.Config) error {
 		return err
 	}
 
-	_ = pg
+	authUsecase := auth.New(pg)
+	merchUsecase := merch.New(pg)
 
-	r := httpRouter.NewRouter()
+	r := httpRouter.NewRouter(cfg, merchUsecase, authUsecase)
 
 	go startHTTP(r, closer, cfg.ServerPort)
 

@@ -7,28 +7,23 @@ import (
 	"github.com/ilyakaznacheev/cleanenv"
 )
 
-type dbConfig struct {
-	DBConnURL        string `env:"DB_URL"            env-required:"true"`
+type Config struct {
 	DatabasePort     string `env:"DATABASE_PORT"     env-required:"true"`
 	DatabaseUser     string `env:"DATABASE_USER"     env-required:"true"`
 	DatabasePassword string `env:"DATABASE_PASSWORD" env-required:"true"`
 	DatabaseName     string `env:"DATABASE_NAME"     env-required:"true"`
 	DatabaseHost     string `env:"DATABASE_HOST"     env-required:"true"`
-}
-
-type appConfig struct {
-	ServerPort string `env:"SERVER_PORT" env-required:"true"`
-}
-
-type Config struct {
-	dbConfig
-	appConfig
+	ServerPort       string `env:"SERVER_PORT"       env-required:"true"`
+	JWTSecret        string `env:"JWT_SECRET"        env-required:"true"`
+	PublicRoutes     []string
 }
 
 func MustInit() Config {
 	var cfg Config
 
-	if err := cleanenv.ReadEnv(&cfg); err != nil {
+	cfg.PublicRoutes = newPublicRoutes()
+
+	if err := cleanenv.ReadConfig(".env", &cfg); err != nil {
 		slog.Info("failed to read .env", slog.Any("error", err))
 	}
 
@@ -37,4 +32,10 @@ func MustInit() Config {
 	}
 
 	return cfg
+}
+
+func newPublicRoutes() []string {
+	return []string{
+		"/api/auth",
+	}
 }
