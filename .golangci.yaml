@@ -1,0 +1,40 @@
+# https://habr.com/ru/articles/765784/
+linters-settings:
+  varnamelen:
+    min-name-length: 2
+    max-distance: 20
+  nlreturn:
+    # Size of the block (including return statement that is still "OK")
+    # so no return split required.
+    # Default: 1
+    block-size: 2
+  tagliatelle:
+    case:
+      use-field-name: true
+      rules:
+        json: goCamel
+
+linters:
+  enable-all: true
+  disable:
+    - ireturn
+    - musttag
+    - exhaustruct
+    - gomnd
+    - varnamelen
+    - gochecknoglobals
+    - paralleltest
+    - godox
+    - gci
+    - gofumpt
+    - godot
+    - mnd # too many false positives
+    - dupword
+    - dupl # return later
+    - depguard
+    # deprecated
+    - execinquery
+    - exportloopref
+    - funlen
+    - containedctx
+    - tagliatelle
