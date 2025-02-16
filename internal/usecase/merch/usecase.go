@@ -10,6 +10,8 @@ import (
 type Repository interface {
 	GetUserByUsername(ctx context.Context, username string) (entity.User, error)
 	SendCoins(ctx context.Context, req entity.UserTransfer) error
+	GetMerch(ctx context.Context, name string) (entity.Merch, error)
+	BuyMerch(ctx context.Context, req entity.MerchPurchase) error
 }
 
 type Usecase struct {

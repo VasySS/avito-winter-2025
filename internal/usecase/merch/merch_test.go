@@ -114,3 +114,98 @@ func TestUsecase_SendCoin(t *testing.T) {
 		})
 	}
 }
+
+func TestUsecase_BuyItem(t *testing.T) {
+	t.Parallel()
+
+	type fields struct {
+		repo *mocks.Repository
+	}
+
+	tests := []struct {
+		name    string
+		fields  fields
+		input   dto.MerchPurchase
+		setup   func(f *fields, inp dto.MerchPurchase)
+		wantErr assert.ErrorAssertionFunc
+	}{
+		{
+			name: "successful purchase",
+			fields: fields{
+				repo: mocks.NewRepository(t),
+			},
+			input: dto.MerchPurchase{
+				Username:  "user1",
+				MerchName: "merch1",
+			},
+			setup: func(f *fields, inp dto.MerchPurchase) {
+				const (
+					merchID    = 1
+					merchPrice = 100
+					userID     = 1
+				)
+
+				f.repo.On("GetUserByUsername", t.Context(), inp.Username).
+					Return(entity.User{ID: userID, Username: inp.Username, Balance: 1000}, nil).Once()
+				f.repo.On("GetMerch", t.Context(), inp.MerchName).
+					Return(entity.Merch{ID: merchID, Name: inp.MerchName, Price: merchPrice}, nil).Once()
+
+				f.repo.On("BuyMerch", t.Context(), entity.MerchPurchase{
+					UserID:      userID,
+					MerchItemID: merchID,
+					Price:       merchPrice,
+					CreatedAt:   inp.CurTime,
+				}).Return(nil)
+			},
+			wantErr: assert.NoError,
+		},
+		{
+			name: "balance not enough",
+			fields: fields{
+				repo: mocks.NewRepository(t),
+			},
+			input: dto.MerchPurchase{
+				Username:  "user1",
+				MerchName: "merch1",
+			},
+			setup: func(f *fields, inp dto.MerchPurchase) {
+				f.repo.On("GetUserByUsername", t.Context(), inp.Username).
+					Return(entity.User{ID: 1, Username: inp.Username, Balance: 99}, nil).Once()
+				f.repo.On("GetMerch", t.Context(), inp.MerchName).
+					Return(entity.Merch{ID: 1, Name: inp.MerchName, Price: 100}, nil).Once()
+			},
+			wantErr: assert.Error,
+		},
+		{
+			name: "merch not found",
+			fields: fields{
+				repo: mocks.NewRepository(t),
+			},
+			input: dto.MerchPurchase{
+				Username:  "user1",
+				MerchName: "merch_not_existing",
+			},
+			setup: func(f *fields, inp dto.MerchPurchase) {
+				f.repo.On("GetMerch", t.Context(), inp.MerchName).
+					Return(entity.Merch{}, entity.ErrMerchItemNotFound).Once()
+			},
+			wantErr: assert.Error,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			fs := tt.fields
+			u := merch.New(
+				fs.repo,
+			)
+
+			tt.setup(&fs, tt.input)
+
+			err := u.BuyItem(t.Context(), tt.input)
+			tt.wantErr(t, err)
+		})
+	}
+}

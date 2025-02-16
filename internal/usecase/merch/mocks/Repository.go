@@ -15,6 +15,52 @@ type Repository struct {
 	mock.Mock
 }
 
+// BuyMerch provides a mock function with given fields: ctx, req
+func (_m *Repository) BuyMerch(ctx context.Context, req entity.MerchPurchase) error {
+	ret := _m.Called(ctx, req)
+
+	if len(ret) == 0 {
+		panic("no return value specified for BuyMerch")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, entity.MerchPurchase) error); ok {
+		r0 = rf(ctx, req)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// GetMerch provides a mock function with given fields: ctx, name
+func (_m *Repository) GetMerch(ctx context.Context, name string) (entity.Merch, error) {
+	ret := _m.Called(ctx, name)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetMerch")
+	}
+
+	var r0 entity.Merch
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string) (entity.Merch, error)); ok {
+		return rf(ctx, name)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string) entity.Merch); ok {
+		r0 = rf(ctx, name)
+	} else {
+		r0 = ret.Get(0).(entity.Merch)
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string) error); ok {
+		r1 = rf(ctx, name)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // GetUserByUsername provides a mock function with given fields: ctx, username
 func (_m *Repository) GetUserByUsername(ctx context.Context, username string) (entity.User, error) {
 	ret := _m.Called(ctx, username)

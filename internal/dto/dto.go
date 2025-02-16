@@ -14,3 +14,9 @@ type CoinSend struct {
 	ToUser   string `json:"toUser"`
 	Amount   int    `json:"amount"`
 }
+
+type MerchPurchase struct {
+	CurTime   time.Time
+	Username  string
+	MerchName string
+}

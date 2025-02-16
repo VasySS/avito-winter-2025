@@ -12,7 +12,7 @@ import (
 type Usecase interface {
 	Info(ctx context.Context) error
 	SendCoin(ctx context.Context, req dto.CoinSend) error
-	BuyItem(ctx context.Context, item string) error
+	BuyItem(ctx context.Context, req dto.MerchPurchase) error
 }
 
 type Handler struct {
