@@ -3,6 +3,7 @@ module github.com/VasySS/avito-winter-2025
 go 1.24
 
 require (
+	github.com/brianvoe/gofakeit/v7 v7.2.1
 	github.com/georgysavva/scany/v2 v2.1.3
 	github.com/go-chi/chi/v5 v5.2.1
 	github.com/go-chi/jwtauth/v5 v5.3.2

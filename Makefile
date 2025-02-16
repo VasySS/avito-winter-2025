@@ -18,6 +18,10 @@ run:
 
 .PHONY: test
 test:
+	go test ./... -cover -short
+
+.PHONY: test-full
+test-full:
 	go test ./... -cover
 
 .PHONY: lint

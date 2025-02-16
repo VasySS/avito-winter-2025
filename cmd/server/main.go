@@ -14,7 +14,7 @@ import (
 func main() {
 	setupLogger()
 
-	cfg := config.MustInit()
+	cfg := config.MustInit(".env")
 
 	slog.Info("starting app...")
 

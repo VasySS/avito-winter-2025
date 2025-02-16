@@ -20,12 +20,12 @@ type Config struct {
 	PublicRoutes     []string
 }
 
-func MustInit() Config {
+func MustInit(envPath string) Config {
 	var cfg Config
 
 	cfg.PublicRoutes = newPublicRoutes()
 
-	if err := cleanenv.ReadConfig(".env", &cfg); err != nil {
+	if err := cleanenv.ReadConfig(envPath, &cfg); err != nil {
 		slog.Info("failed to read .env", slog.Any("error", err))
 	}
 
