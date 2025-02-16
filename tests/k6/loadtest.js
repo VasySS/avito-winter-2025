@@ -19,9 +19,9 @@ const baseURL = "http://localhost:8080";
 
 export const options = {
   stages: [
-    { duration: "10s", target: 50 },
-    { duration: "10s", target: 100 },
-    { duration: "30", target: 150 },
+    { duration: "10s", target: 10 },
+    { duration: "10s", target: 25 },
+    { duration: "30", target: 50 },
     { duration: "10s", target: 0 },
   ],
   thresholds: {

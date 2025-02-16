@@ -28,7 +28,7 @@ func Run(ctx context.Context, cfg config.Config) error {
 
 	authUsecase := auth.New(
 		pg,
-		auth.NewBcryptPasswordHasher(),
+		auth.NewArgon2PasswordHasher(),
 		auth.NewJWTGenerator(cfg.JWTSecret, cfg.AccessTokenTTL),
 	)
 	merchUsecase := merch.New(pg)
