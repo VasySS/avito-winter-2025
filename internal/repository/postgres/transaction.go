@@ -54,7 +54,7 @@ func (tm *TxManager) RunSerializable(ctx context.Context, fn func(context.Contex
 	return tm.beginFunc(ctx, opts, fn)
 }
 
-func (tm *TxManager) GetQueryEngine(ctx context.Context) QueryEngine {
+func (tm *TxManager) GetQueryEngine(ctx context.Context) QueryEngine { //nolint:ireturn
 	tx, ok := ctx.Value(txManagerKey{}).(QueryEngine)
 	if ok && tx != nil {
 		return tx
@@ -82,5 +82,5 @@ func (tm *TxManager) beginFunc(
 		return err
 	}
 
-	return tx.Commit(ctx)
+	return tx.Commit(ctx) //nolint:wrapcheck
 }

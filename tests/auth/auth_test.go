@@ -72,7 +72,7 @@ func (s *HandlerTestSuite) TearDownSuite() {
 	s.pgPool.Close()
 }
 
-func TestAuthHandlerSuite(t *testing.T) {
+func TestAuthHandlerSuite(t *testing.T) { //nolint:paralleltest
 	if testing.Short() {
 		t.Skip("skipping merch integration test in short mode.")
 	}
@@ -83,7 +83,7 @@ func TestAuthHandlerSuite(t *testing.T) {
 func (s *HandlerTestSuite) TestAuthHandler() {
 	randUsername := gofakeit.Username()
 
-	reqBody, err := json.Marshal(dto.AuthUser{
+	reqBody, err := json.Marshal(dto.AuthUser{ //nolint:musttag
 		Username: randUsername,
 		Password: gofakeit.Password(true, true, true, true, false, 10),
 	})
@@ -104,7 +104,7 @@ func (s *HandlerTestSuite) TestAuthHandler() {
 	s.Require().NoError(err)
 	s.NotEmpty(respBody.Token)
 
-	badReqBody, err := json.Marshal(dto.AuthUser{
+	badReqBody, err := json.Marshal(dto.AuthUser{ //nolint:musttag
 		Username: randUsername,
 		Password: "wrongpass",
 	})

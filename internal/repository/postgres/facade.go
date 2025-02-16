@@ -60,13 +60,13 @@ func (f *Facade) GetUserByUsername(ctx context.Context, username string) (entity
 }
 
 func (f *Facade) SendCoins(ctx context.Context, req entity.UserTransfer) error {
-	return f.txManager.RunRepeatableRead(ctx, func(ctx context.Context) error {
+	return f.txManager.RunRepeatableRead(ctx, func(ctx context.Context) error { //nolint:wrapcheck
 		return f.Repository.SendCoins(ctx, req)
 	})
 }
 
 func (f *Facade) BuyMerch(ctx context.Context, req entity.MerchPurchase) error {
-	return f.txManager.RunRepeatableRead(ctx, func(ctx context.Context) error {
+	return f.txManager.RunRepeatableRead(ctx, func(ctx context.Context) error { //nolint:wrapcheck
 		return f.Repository.BuyMerch(ctx, req)
 	})
 }

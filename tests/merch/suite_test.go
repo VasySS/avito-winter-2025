@@ -87,7 +87,7 @@ func (s *HandlerTestSuite) SetupTest() {
 func (s *HandlerTestSuite) userLogin() {
 	randUsername := gofakeit.Username()
 
-	reqBody, err := json.Marshal(dto.AuthUser{
+	reqBody, err := json.Marshal(dto.AuthUser{ //nolint:musttag
 		Username: randUsername,
 		Password: gofakeit.Password(true, true, true, true, false, 10),
 	})
@@ -111,7 +111,7 @@ func (s *HandlerTestSuite) userLogin() {
 	s.username = randUsername
 }
 
-func TestMerchHandlerSuite(t *testing.T) {
+func TestMerchHandlerSuite(t *testing.T) { //nolint:paralleltest
 	if testing.Short() {
 		t.Skip("skipping merch integration test in short mode.")
 	}
@@ -150,7 +150,7 @@ func (s *HandlerTestSuite) TestSendCoinHandler() {
 
 	s.Require().NoError(s.pgFacade.CreateUser(s.T().Context(), secondUser))
 
-	reqBody, err := json.Marshal(dto.CoinSend{
+	reqBody, err := json.Marshal(dto.CoinSend{ //nolint:musttag
 		ToUser: secondUser.Username,
 		Amount: 123,
 	})
@@ -187,10 +187,10 @@ func (s *HandlerTestSuite) TestInfoHandler() {
 	s.Require().NoError(err)
 
 	secondUserDB, err := s.pgFacade.GetUserByUsername(s.T().Context(), secondUser.Username)
-	s.NoError(err)
+	s.Require().NoError(err)
 
 	merch, err := s.pgFacade.GetMerch(s.T().Context(), "t-shirt")
-	s.NoError(err)
+	s.Require().NoError(err)
 
 	s.NoError(s.pgFacade.SendCoins(s.T().Context(), entity.UserTransfer{
 		SenderUserID:   firstUserDB.ID,
@@ -199,7 +199,7 @@ func (s *HandlerTestSuite) TestInfoHandler() {
 		CreatedAt:      gofakeit.PastDate(),
 	}))
 
-	s.NoError(s.pgFacade.BuyMerch(s.T().Context(), entity.MerchPurchase{
+	s.Require().NoError(s.pgFacade.BuyMerch(s.T().Context(), entity.MerchPurchase{
 		UserID:      firstUserDB.ID,
 		MerchItemID: merch.ID,
 		Price:       80,

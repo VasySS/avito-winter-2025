@@ -6,11 +6,11 @@ import (
 	"github.com/VasySS/avito-winter-2025/internal/entity"
 )
 
-func (r *Repository) SetUser(ctx context.Context, username string, user entity.User) {
+func (r *Repository) SetUser(_ context.Context, username string, user entity.User) {
 	r.cache.Set(username, user, 1)
 }
 
-func (r *Repository) GetUser(ctx context.Context, username string) (entity.User, bool) {
+func (r *Repository) GetUser(_ context.Context, username string) (entity.User, bool) {
 	user, ok := r.cache.Get(username)
 	if !ok {
 		return entity.User{}, false

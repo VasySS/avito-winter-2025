@@ -11,24 +11,24 @@ type NoCache struct{}
 
 func (r *NoCache) Close() {}
 
-func (r *NoCache) SetUser(ctx context.Context, username string, user entity.User) {}
+func (r *NoCache) SetUser(_ context.Context, _ string, _ entity.User) {}
 
-func (r *NoCache) GetUser(ctx context.Context, username string) (entity.User, bool) {
+func (r *NoCache) GetUser(_ context.Context, _ string) (entity.User, bool) {
 	return entity.User{}, false
 }
 
-func (r *NoCache) SetMerch(ctx context.Context, name string, merch entity.Merch) {}
+func (r *NoCache) SetMerch(_ context.Context, _ string, _ entity.Merch) {}
 
-func (r *NoCache) GetMerch(ctx context.Context, name string) (entity.Merch, bool) {
+func (r *NoCache) GetMerch(_ context.Context, _ string) (entity.Merch, bool) {
 	return entity.Merch{}, false
 }
 
-func (r *NoCache) Info(ctx context.Context, userID int64) (dto.InfoResponse, bool) {
+func (r *NoCache) Info(_ context.Context, _ int64) (dto.InfoResponse, bool) {
 	return dto.InfoResponse{}, false
 }
 
-func (r *NoCache) SetInfo(ctx context.Context, userID int64, info dto.InfoResponse) {}
+func (r *NoCache) SetInfo(_ context.Context, _ int64, _ dto.InfoResponse) {}
 
-func (r *NoCache) GetInfo(ctx context.Context, userID int64) (dto.InfoResponse, bool) {
+func (r *NoCache) GetInfo(_ context.Context, _ int64) (dto.InfoResponse, bool) {
 	return dto.InfoResponse{}, false
 }

@@ -43,7 +43,7 @@ func Run(ctx context.Context, cfg config.Config) error {
 	closeCtx, stop := context.WithCancel(context.Background())
 	defer stop()
 
-	if err := closer.Close(closeCtx); err != nil {
+	if err := closer.Close(closeCtx); err != nil { //nolint:contextcheck
 		return err
 	}
 
