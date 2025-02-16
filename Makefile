@@ -16,6 +16,10 @@ MAIN_FILE := ./cmd/server/main.go
 run:
 	go run ${MAIN_FILE}
 
+.PHONY: test
+test:
+	go test ./... -cover
+
 .PHONY: lint
 lint:
 	golangci-lint run
@@ -43,3 +47,16 @@ goose-down:
 .PHONY: goose-status
 goose-status:
 	goose -dir ./migrations postgres "${PG_URL}" status
+
+.PHONY: goose-fix
+goose-fix:
+	goose -dir ./migrations postgres "${PG_URL}" fix
+
+.PHONY: compose-up
+compose-up:
+	docker compose -f 'docker-compose.yml' up -d --build
+	docker container prune -f
+
+.PHONY: compose-down
+compose-down:
+	docker compose -f 'docker-compose.yml' down

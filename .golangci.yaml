@@ -21,3 +21,5 @@ linters:
     - depguard
     - mnd
     - exhaustruct
+    - funlen
+    - tenv

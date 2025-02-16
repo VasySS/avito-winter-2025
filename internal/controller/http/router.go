@@ -3,11 +3,10 @@ package http
 import (
 	"net/http"
 
-	"avito-task/internal/config"
-	"avito-task/internal/controller/http/middleware"
-	"avito-task/internal/controller/http/v1/auth"
-	"avito-task/internal/controller/http/v1/merch"
-
+	"github.com/VasySS/avito-winter-2025/internal/config"
+	"github.com/VasySS/avito-winter-2025/internal/controller/http/middleware"
+	"github.com/VasySS/avito-winter-2025/internal/controller/http/v1/auth"
+	"github.com/VasySS/avito-winter-2025/internal/controller/http/v1/merch"
 	"github.com/go-chi/chi/v5"
 	chiMiddleware "github.com/go-chi/chi/v5/middleware"
 )

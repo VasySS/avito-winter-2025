@@ -6,8 +6,8 @@ import (
 	"os/signal"
 	"syscall"
 
-	"avito-task/internal/app"
-	"avito-task/internal/config"
+	"github.com/VasySS/avito-winter-2025/internal/app"
+	"github.com/VasySS/avito-winter-2025/internal/config"
 )
 
 func main() {

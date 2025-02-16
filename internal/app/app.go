@@ -9,11 +9,12 @@ import (
 	"net/http"
 	"time"
 
-	"avito-task/internal/config"
-	httpRouter "avito-task/internal/controller/http"
-	"avito-task/internal/repository/postgres"
-	"avito-task/internal/usecase/auth"
-	"avito-task/internal/usecase/merch"
+	"github.com/VasySS/avito-winter-2025/internal/config"
+	httpRouter "github.com/VasySS/avito-winter-2025/internal/controller/http"
+	"github.com/VasySS/avito-winter-2025/internal/repository/postgres"
+	"github.com/VasySS/avito-winter-2025/internal/usecase/auth"
+	"github.com/VasySS/avito-winter-2025/internal/usecase/merch"
+
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -25,7 +26,11 @@ func Run(ctx context.Context, cfg config.Config) error {
 		return err
 	}
 
-	authUsecase := auth.New(pg)
+	authUsecase := auth.New(
+		pg,
+		auth.NewBcryptPasswordHasher(),
+		auth.NewJWTGenerator(cfg.JWTSecret, cfg.AccessTokenTTL),
+	)
 	merchUsecase := merch.New(pg)
 
 	r := httpRouter.NewRouter(cfg, merchUsecase, authUsecase)
