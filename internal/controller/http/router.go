@@ -19,16 +19,16 @@ func NewRouter(
 ) http.Handler {
 	r := chi.NewRouter()
 
-	r.Use(chiMiddleware.Heartbeat("/health"))
-	r.Use(chiMiddleware.Recoverer)
-
-	r.Use(middleware.CheckJWT(cfg.JWTSecret, cfg.PublicRoutes))
-
-	r.Use(chiMiddleware.RequestID)
-	r.Use(chiMiddleware.CleanPath)
-	r.Use(chiMiddleware.StripSlashes)
-	r.Use(chiMiddleware.Compress(4))
-	r.Use(chiMiddleware.Logger)
+	r.Use(
+		chiMiddleware.Logger,
+		chiMiddleware.Recoverer,
+		chiMiddleware.Heartbeat("/health"),
+		middleware.CheckJWT(cfg.JWTSecret, cfg.PublicRoutes),
+		chiMiddleware.RequestID,
+		chiMiddleware.CleanPath,
+		chiMiddleware.StripSlashes,
+		chiMiddleware.Compress(5),
+	)
 
 	r.Route("/api", func(r chi.Router) {
 		r.Mount("/", merch.NewHandler(merchUsecase).Router())

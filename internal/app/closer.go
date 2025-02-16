@@ -13,9 +13,7 @@ type Closer struct {
 	funcs []closeFunc
 }
 
-var (
-	ErrContextClosed = errors.New("context closed")
-)
+var ErrContextClosed = errors.New("context closed")
 
 func NewCloser() *Closer {
 	return &Closer{

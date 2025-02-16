@@ -14,7 +14,6 @@ import (
 	"avito-task/internal/repository/postgres"
 	"avito-task/internal/usecase/auth"
 	"avito-task/internal/usecase/merch"
-
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
