@@ -24,6 +24,10 @@ test:
 test-full:
 	go test ./... -cover
 
+.PHONY: test-load
+test-load:
+	K6_WEB_DASHBOARD=true K6_WEB_DASHBOARD_EXPORT=report.html k6 run ./tests/k6/loadtest.js
+
 .PHONY: lint
 lint:
 	golangci-lint run
