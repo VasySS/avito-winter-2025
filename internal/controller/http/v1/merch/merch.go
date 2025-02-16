@@ -58,6 +58,11 @@ func (h *Handler) sendCoin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if errors.Is(err, entity.ErrUserNotFound) {
+		respondWithError(w, http.StatusBadRequest, sendCoinHandlerName, err.Error(), err)
+		return
+	}
+
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, sendCoinHandlerName, "failed to send coins", err)
 		return
