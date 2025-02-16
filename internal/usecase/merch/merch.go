@@ -44,7 +44,7 @@ func (u *Usecase) SendCoin(ctx context.Context, req dto.CoinSend) error {
 
 	senderUser, err := u.repo.GetUserByUsername(ctx, req.FromUser)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to get sender user from repo: %w", err)
 	}
 
 	if senderUser.Balance < req.Amount {
@@ -53,7 +53,7 @@ func (u *Usecase) SendCoin(ctx context.Context, req dto.CoinSend) error {
 
 	receiverUser, err := u.repo.GetUserByUsername(ctx, req.ToUser)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to get receiver user from repo: %w", err)
 	}
 
 	sendReq := entity.UserTransfer{
@@ -64,7 +64,7 @@ func (u *Usecase) SendCoin(ctx context.Context, req dto.CoinSend) error {
 	}
 
 	if err := u.repo.SendCoins(ctx, sendReq); err != nil {
-		return err
+		return fmt.Errorf("failed to send coins in repo: %w", err)
 	}
 
 	return nil
@@ -73,12 +73,12 @@ func (u *Usecase) SendCoin(ctx context.Context, req dto.CoinSend) error {
 func (u *Usecase) Info(ctx context.Context, username string) (dto.InfoResponse, error) {
 	user, err := u.repo.GetUserByUsername(ctx, username)
 	if err != nil {
-		return dto.InfoResponse{}, err
+		return dto.InfoResponse{}, fmt.Errorf("failed to get user from repo: %w", err)
 	}
 
 	resp, err := u.repo.Info(ctx, user.ID)
 	if err != nil {
-		return dto.InfoResponse{}, err
+		return dto.InfoResponse{}, fmt.Errorf("failed to get info from repo: %w", err)
 	}
 
 	return resp, nil

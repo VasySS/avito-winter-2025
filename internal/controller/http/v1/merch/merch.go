@@ -11,6 +11,8 @@ import (
 
 const (
 	sendCoinHandlerName = "send-coin"
+	buyItemHandlerName  = "buy-item"
+	infoHandlerName     = "info"
 )
 
 func (h *Handler) info(w http.ResponseWriter, r *http.Request) {
@@ -23,7 +25,7 @@ func (h *Handler) info(w http.ResponseWriter, r *http.Request) {
 
 	resp, err := h.usecase.Info(ctx, username)
 	if err != nil {
-		respondWithError(w, http.StatusBadRequest, sendCoinHandlerName, "failed to get info", err)
+		respondWithError(w, http.StatusBadRequest, infoHandlerName, "failed to get info", err)
 		return
 	}
 
@@ -64,7 +66,7 @@ func (h *Handler) buyItem(w http.ResponseWriter, r *http.Request) {
 
 	merchName := chi.URLParam(r, "item")
 	if merchName == "" {
-		respondWithError(w, http.StatusBadRequest, sendCoinHandlerName, "invalid item name", nil)
+		respondWithError(w, http.StatusBadRequest, buyItemHandlerName, "invalid item name", nil)
 		return
 	}
 
@@ -75,7 +77,7 @@ func (h *Handler) buyItem(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := h.usecase.BuyItem(ctx, req); err != nil {
-		respondWithError(w, http.StatusBadRequest, sendCoinHandlerName, "failed to buy item", err)
+		respondWithError(w, http.StatusBadRequest, buyItemHandlerName, "failed to buy item", err)
 		return
 	}
 

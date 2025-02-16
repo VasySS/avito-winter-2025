@@ -8,7 +8,6 @@ import (
 	"github.com/VasySS/avito-winter-2025/internal/entity"
 	"github.com/VasySS/avito-winter-2025/internal/usecase/auth"
 	"github.com/VasySS/avito-winter-2025/internal/usecase/auth/mocks"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )

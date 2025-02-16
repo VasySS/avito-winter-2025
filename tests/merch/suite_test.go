@@ -93,7 +93,7 @@ func (s *HandlerTestSuite) userLogin() {
 	})
 	s.Require().NoError(err)
 
-	req, err := http.NewRequest(http.MethodPost, authPath, bytes.NewBuffer(reqBody))
+	req, err := http.NewRequestWithContext(s.T().Context(), http.MethodPost, authPath, bytes.NewBuffer(reqBody))
 	s.Require().NoError(err)
 
 	rr := httptest.NewRecorder()
@@ -122,7 +122,7 @@ func TestMerchHandlerSuite(t *testing.T) {
 func (s *HandlerTestSuite) TestBuyItemHandler() {
 	const itemName = "t-shirt"
 
-	req, err := http.NewRequest(http.MethodPost, buyPath+"/"+itemName, nil)
+	req, err := http.NewRequestWithContext(s.T().Context(), http.MethodPost, buyPath+"/"+itemName, nil)
 	req.Header.Set("Authorization", "Bearer "+s.tokenStr)
 	s.Require().NoError(err)
 
@@ -132,11 +132,11 @@ func (s *HandlerTestSuite) TestBuyItemHandler() {
 	s.Equal(http.StatusOK, rr.Code)
 
 	user, err := s.pgFacade.GetUserByUsername(s.T().Context(), s.username)
-	s.NoError(err)
+	s.Require().NoError(err)
 	s.Equal(920, user.Balance)
 
 	resp, err := s.pgFacade.Info(s.T().Context(), user.ID)
-	s.NoError(err)
+	s.Require().NoError(err)
 	s.Equal(1, resp.Inventory[0].Quantity)
 	s.Equal(itemName, resp.Inventory[0].Name)
 }
@@ -148,17 +148,17 @@ func (s *HandlerTestSuite) TestSendCoinHandler() {
 		CreatedAt: gofakeit.PastDate(),
 	}
 
-	s.NoError(s.pgFacade.CreateUser(s.T().Context(), secondUser))
+	s.Require().NoError(s.pgFacade.CreateUser(s.T().Context(), secondUser))
 
 	reqBody, err := json.Marshal(dto.CoinSend{
 		ToUser: secondUser.Username,
 		Amount: 123,
 	})
-	s.NoError(err)
+	s.Require().NoError(err)
 
-	req, err := http.NewRequest(http.MethodPost, sendCoinPath, bytes.NewBuffer(reqBody))
+	req, err := http.NewRequestWithContext(s.T().Context(), http.MethodPost, sendCoinPath, bytes.NewBuffer(reqBody))
 	req.Header.Set("Authorization", "Bearer "+s.tokenStr)
-	s.NoError(err)
+	s.Require().NoError(err)
 
 	rr := httptest.NewRecorder()
 	s.router.ServeHTTP(rr, req)
@@ -166,11 +166,11 @@ func (s *HandlerTestSuite) TestSendCoinHandler() {
 	s.Equal(http.StatusOK, rr.Code)
 
 	sender, err := s.pgFacade.GetUserByUsername(s.T().Context(), s.username)
-	s.NoError(err)
+	s.Require().NoError(err)
 	s.Equal(877, sender.Balance)
 
 	receiver, err := s.pgFacade.GetUserByUsername(s.T().Context(), secondUser.Username)
-	s.NoError(err)
+	s.Require().NoError(err)
 	s.Equal(1123, receiver.Balance)
 }
 
@@ -181,10 +181,10 @@ func (s *HandlerTestSuite) TestInfoHandler() {
 		CreatedAt: gofakeit.PastDate(),
 	}
 
-	s.NoError(s.pgFacade.CreateUser(s.T().Context(), secondUser))
+	s.Require().NoError(s.pgFacade.CreateUser(s.T().Context(), secondUser))
 
 	firstUserDB, err := s.pgFacade.GetUserByUsername(s.T().Context(), s.username)
-	s.NoError(err)
+	s.Require().NoError(err)
 
 	secondUserDB, err := s.pgFacade.GetUserByUsername(s.T().Context(), secondUser.Username)
 	s.NoError(err)
@@ -206,7 +206,7 @@ func (s *HandlerTestSuite) TestInfoHandler() {
 		CreatedAt:   gofakeit.PastDate(),
 	}))
 
-	req, err := http.NewRequest(http.MethodGet, infoPath, nil)
+	req, err := http.NewRequestWithContext(s.T().Context(), http.MethodGet, infoPath, nil)
 	req.Header.Set("Authorization", "Bearer "+s.tokenStr)
 	s.Require().NoError(err)
 

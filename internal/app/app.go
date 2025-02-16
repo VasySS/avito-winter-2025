@@ -14,7 +14,6 @@ import (
 	"github.com/VasySS/avito-winter-2025/internal/repository/postgres"
 	"github.com/VasySS/avito-winter-2025/internal/usecase/auth"
 	"github.com/VasySS/avito-winter-2025/internal/usecase/merch"
-
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 

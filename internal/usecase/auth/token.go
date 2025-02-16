@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/VasySS/avito-winter-2025/internal/entity"
-
 	"github.com/lestrrat-go/jwx/v2/jwa"
 	"github.com/lestrrat-go/jwx/v2/jwt"
 )
@@ -27,7 +26,6 @@ func (g *JWTGenerator) NewAccessToken(user entity.User, currentTime time.Time) (
 		Claim("id", user.ID).
 		Claim("username", user.Username).
 		Build()
-
 	if err != nil {
 		return "", fmt.Errorf("token build failed: %w", err)
 	}

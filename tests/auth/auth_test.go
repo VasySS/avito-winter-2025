@@ -87,9 +87,9 @@ func (s *HandlerTestSuite) TestAuthHandler() {
 		Username: randUsername,
 		Password: gofakeit.Password(true, true, true, true, false, 10),
 	})
-	s.NoError(err)
+	s.Require().NoError(err)
 
-	req, err := http.NewRequest(http.MethodPost, authPath, bytes.NewBuffer(reqBody))
+	req, err := http.NewRequestWithContext(s.T().Context(), http.MethodPost, authPath, bytes.NewBuffer(reqBody))
 	s.Require().NoError(err)
 
 	rr := httptest.NewRecorder()
@@ -108,9 +108,9 @@ func (s *HandlerTestSuite) TestAuthHandler() {
 		Username: randUsername,
 		Password: "wrongpass",
 	})
-	s.NoError(err)
+	s.Require().NoError(err)
 
-	badReq, err := http.NewRequest(http.MethodPost, authPath, bytes.NewBuffer(badReqBody))
+	badReq, err := http.NewRequestWithContext(s.T().Context(), http.MethodPost, authPath, bytes.NewBuffer(badReqBody))
 	s.Require().NoError(err)
 
 	badRR := httptest.NewRecorder()

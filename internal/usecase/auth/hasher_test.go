@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	"github.com/VasySS/avito-winter-2025/internal/usecase/auth"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"golang.org/x/crypto/bcrypt"

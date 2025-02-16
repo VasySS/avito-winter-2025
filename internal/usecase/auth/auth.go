@@ -21,7 +21,12 @@ func (u *Usecase) AuthUser(ctx context.Context, req dto.AuthUser) (string, error
 			return "", err
 		}
 
-		return u.generator.NewAccessToken(user, req.CurTime)
+		token, err := u.generator.NewAccessToken(user, req.CurTime)
+		if err != nil {
+			return "", fmt.Errorf("failed to generate access token: %w", err)
+		}
+
+		return token, nil
 	} else if err != nil {
 		return "", fmt.Errorf("failed to get user: %w", err)
 	}
@@ -30,7 +35,12 @@ func (u *Usecase) AuthUser(ctx context.Context, req dto.AuthUser) (string, error
 		return "", ErrInvalidPassword
 	}
 
-	return u.generator.NewAccessToken(user, req.CurTime)
+	token, err := u.generator.NewAccessToken(user, req.CurTime)
+	if err != nil {
+		return "", fmt.Errorf("failed to generate access token: %w", err)
+	}
+
+	return token, nil
 }
 
 func (u *Usecase) newUser(ctx context.Context, req dto.AuthUser) (entity.User, error) {

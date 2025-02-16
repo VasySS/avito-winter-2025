@@ -77,7 +77,7 @@ func TestUsecase_SendCoin(t *testing.T) {
 				ToUser:   "user1",
 				Amount:   100,
 			},
-			setup:   func(f *fields, inp dto.CoinSend) {},
+			setup:   func(_ *fields, _ dto.CoinSend) {},
 			wantErr: assert.Error,
 		},
 		{

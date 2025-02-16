@@ -6,7 +6,6 @@ import (
 
 	"github.com/VasySS/avito-winter-2025/internal/entity"
 	"github.com/VasySS/avito-winter-2025/internal/usecase/auth"
-
 	"github.com/lestrrat-go/jwx/v2/jwa"
 	"github.com/lestrrat-go/jwx/v2/jwt"
 	"github.com/stretchr/testify/assert"
