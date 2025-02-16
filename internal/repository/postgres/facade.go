@@ -22,6 +22,10 @@ type Facade struct {
 }
 
 func NewFacade(repo *Repository, cache Cache) *Facade {
+	if cache == nil {
+		cache = &NoCache{}
+	}
+
 	return &Facade{
 		Repository: repo,
 		cache:      cache,

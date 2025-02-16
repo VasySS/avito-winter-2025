@@ -26,7 +26,7 @@ test-full:
 
 .PHONY: test-load
 test-load:
-	K6_WEB_DASHBOARD=true K6_WEB_DASHBOARD_EXPORT=report.html k6 run ./tests/k6/loadtest.js
+	K6_WEB_DASHBOARD=true K6_WEB_DASHBOARD_EXPORT=k6-report.html k6 run ./tests/k6/loadtest.js
 
 .PHONY: lint
 lint:

@@ -11,15 +11,17 @@ const users = new SharedArray("users", function () {
   return JSON.parse(open("./users.json"));
 });
 
+const userTokens = new Map();
+
 const items = ["t-shirt", "pen", "cup", "socks"];
 
-const baseURL = "http://192.168.0.222:8075";
+const baseURL = "http://localhost:8080";
 
 export const options = {
   stages: [
+    { duration: "10s", target: 50 },
     { duration: "10s", target: 100 },
-    { duration: "10s", target: 250 },
-    { duration: "30", target: 500 },
+    { duration: "30", target: 150 },
     { duration: "10s", target: 0 },
   ],
   thresholds: {
@@ -30,26 +32,31 @@ export const options = {
 
 export default function () {
   const user = users[Math.floor(Math.random() * users.length)];
+  let token = userTokens.get(user.username);
 
-  const authRes = http.post(
-    `${baseURL}/api/auth`,
-    JSON.stringify({
-      username: user.username,
-      password: user.password,
-    }),
-    { headers: { "Content-Type": "application/json" } }
-  );
+  if (!token) {
+    const authRes = http.post(
+      `${baseURL}/api/auth`,
+      JSON.stringify({
+        username: user.username,
+        password: user.password,
+      }),
+      { headers: { "Content-Type": "application/json" } }
+    );
 
-  if (
-    !check(authRes, {
-      "auth status 200": (r) => r.status === 200,
-      "auth token received": (r) => r.json().token !== undefined,
-    })
-  ) {
-    return;
+    if (
+      !check(authRes, {
+        "auth status 200": (r) => r.status === 200,
+        "auth token received": (r) => r.json().token !== undefined,
+      })
+    ) {
+      return;
+    }
+
+    token = authRes.json().token;
+    userTokens.set(user.username, token);
   }
 
-  const token = authRes.json().token;
   const headers = {
     headers: {
       Authorization: `Bearer ${token}`,

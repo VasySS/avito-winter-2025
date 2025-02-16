@@ -62,7 +62,7 @@ func (s *HandlerTestSuite) SetupSuite() {
 
 	txManager := postgres.NewTxManager(pool)
 	pgStorage := postgres.New(txManager)
-	pgFacade := postgres.NewFacade(pgStorage)
+	pgFacade := postgres.NewFacade(pgStorage, nil)
 
 	merchUsecase := merchUc.New(pgFacade)
 	authUsecase := auth.New(

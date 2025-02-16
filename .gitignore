@@ -2,4 +2,4 @@
 .env.*
 !.env.example
 !.env.test
-report.html
+k6-report.html

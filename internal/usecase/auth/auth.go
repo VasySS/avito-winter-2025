@@ -7,9 +7,10 @@ import (
 
 	"github.com/VasySS/avito-winter-2025/internal/dto"
 	"github.com/VasySS/avito-winter-2025/internal/entity"
+	"golang.org/x/crypto/bcrypt"
 )
 
-const hashCost = 10
+const hashCost = bcrypt.DefaultCost
 
 var ErrInvalidPassword = errors.New("invalid password")
 
