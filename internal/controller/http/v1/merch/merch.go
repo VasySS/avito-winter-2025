@@ -54,12 +54,12 @@ func (h *Handler) sendCoin(w http.ResponseWriter, r *http.Request) {
 
 	err := h.usecase.SendCoin(ctx, req)
 	if errors.Is(err, entity.ErrLowBalance) {
-		respondWithError(w, http.StatusBadRequest, sendCoinHandlerName, err.Error(), err)
+		respondWithError(w, http.StatusBadRequest, sendCoinHandlerName, entity.ErrLowBalance.Error(), err)
 		return
 	}
 
 	if errors.Is(err, entity.ErrUserNotFound) {
-		respondWithError(w, http.StatusBadRequest, sendCoinHandlerName, err.Error(), err)
+		respondWithError(w, http.StatusBadRequest, sendCoinHandlerName, entity.ErrUserNotFound.Error(), err)
 		return
 	}
 
@@ -93,12 +93,12 @@ func (h *Handler) buyItem(w http.ResponseWriter, r *http.Request) {
 
 	err := h.usecase.BuyItem(ctx, req)
 	if errors.Is(err, entity.ErrLowBalance) {
-		respondWithError(w, http.StatusBadRequest, buyItemHandlerName, err.Error(), err)
+		respondWithError(w, http.StatusBadRequest, buyItemHandlerName, entity.ErrLowBalance.Error(), err)
 		return
 	}
 
 	if errors.Is(err, entity.ErrSameTransferUser) {
-		respondWithError(w, http.StatusBadRequest, buyItemHandlerName, err.Error(), err)
+		respondWithError(w, http.StatusBadRequest, buyItemHandlerName, entity.ErrSameTransferUser.Error(), err)
 		return
 	}
 

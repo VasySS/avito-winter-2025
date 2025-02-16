@@ -11,6 +11,7 @@ import (
 
 	"github.com/VasySS/avito-winter-2025/internal/config"
 	httpRouter "github.com/VasySS/avito-winter-2025/internal/controller/http"
+	"github.com/VasySS/avito-winter-2025/internal/repository/inmem"
 	"github.com/VasySS/avito-winter-2025/internal/repository/postgres"
 	"github.com/VasySS/avito-winter-2025/internal/usecase/auth"
 	"github.com/VasySS/avito-winter-2025/internal/usecase/merch"
@@ -81,9 +82,16 @@ func newPostgres(ctx context.Context, closer *Closer, cfg config.Config) (*postg
 
 	closer.Add(pool.Close)
 
+	cache, err := inmem.New()
+	if err != nil {
+		return nil, fmt.Errorf("failed to create cache: %w", err)
+	}
+
+	closer.Add(cache.Close)
+
 	txManager := postgres.NewTxManager(pool)
 	pgStorage := postgres.New(txManager)
-	pgFacade := postgres.NewFacade(pgStorage)
+	pgFacade := postgres.NewFacade(pgStorage, cache)
 
 	return pgFacade, nil
 }
