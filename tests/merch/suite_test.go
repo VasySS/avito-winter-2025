@@ -25,6 +25,10 @@ import (
 const (
 	migrationsPath = "../../migrations"
 	envPath        = "../../.env"
+	authPath       = "/api/auth"
+	buyPath        = "/api/buy"
+	infoPath       = "/api/info"
+	sendCoinPath   = "/api/send-coin"
 )
 
 type HandlerTestSuite struct {
@@ -89,7 +93,7 @@ func (s *HandlerTestSuite) userLogin() {
 	})
 	s.Require().NoError(err)
 
-	req, err := http.NewRequest(http.MethodPost, "/api/auth", bytes.NewBuffer(reqBody))
+	req, err := http.NewRequest(http.MethodPost, authPath, bytes.NewBuffer(reqBody))
 	s.Require().NoError(err)
 
 	rr := httptest.NewRecorder()
@@ -116,7 +120,9 @@ func TestMerchHandlerSuite(t *testing.T) {
 }
 
 func (s *HandlerTestSuite) TestBuyItemHandler() {
-	req, err := http.NewRequest(http.MethodPost, "/api/buy/t-shirt", nil)
+	const itemName = "t-shirt"
+
+	req, err := http.NewRequest(http.MethodPost, buyPath+"/"+itemName, nil)
 	req.Header.Set("Authorization", "Bearer "+s.tokenStr)
 	s.Require().NoError(err)
 
@@ -132,7 +138,7 @@ func (s *HandlerTestSuite) TestBuyItemHandler() {
 	resp, err := s.pgFacade.Info(s.T().Context(), user.ID)
 	s.NoError(err)
 	s.Equal(1, resp.Inventory[0].Quantity)
-	s.Equal("t-shirt", resp.Inventory[0].Name)
+	s.Equal(itemName, resp.Inventory[0].Name)
 }
 
 func (s *HandlerTestSuite) TestSendCoinHandler() {
@@ -150,7 +156,7 @@ func (s *HandlerTestSuite) TestSendCoinHandler() {
 	})
 	s.NoError(err)
 
-	req, err := http.NewRequest(http.MethodPost, "/api/send-coin", bytes.NewBuffer(reqBody))
+	req, err := http.NewRequest(http.MethodPost, sendCoinPath, bytes.NewBuffer(reqBody))
 	req.Header.Set("Authorization", "Bearer "+s.tokenStr)
 	s.NoError(err)
 
@@ -166,4 +172,54 @@ func (s *HandlerTestSuite) TestSendCoinHandler() {
 	receiver, err := s.pgFacade.GetUserByUsername(s.T().Context(), secondUser.Username)
 	s.NoError(err)
 	s.Equal(1123, receiver.Balance)
+}
+
+func (s *HandlerTestSuite) TestInfoHandler() {
+	secondUser := entity.User{
+		Username:  gofakeit.Username(),
+		Password:  gofakeit.Password(true, true, true, true, false, 10),
+		CreatedAt: gofakeit.PastDate(),
+	}
+
+	s.NoError(s.pgFacade.CreateUser(s.T().Context(), secondUser))
+
+	firstUserDB, err := s.pgFacade.GetUserByUsername(s.T().Context(), s.username)
+	s.NoError(err)
+
+	secondUserDB, err := s.pgFacade.GetUserByUsername(s.T().Context(), secondUser.Username)
+	s.NoError(err)
+
+	merch, err := s.pgFacade.GetMerch(s.T().Context(), "t-shirt")
+	s.NoError(err)
+
+	s.NoError(s.pgFacade.SendCoins(s.T().Context(), entity.UserTransfer{
+		SenderUserID:   firstUserDB.ID,
+		ReceiverUserID: secondUserDB.ID,
+		Amount:         merch.Price,
+		CreatedAt:      gofakeit.PastDate(),
+	}))
+
+	s.NoError(s.pgFacade.BuyMerch(s.T().Context(), entity.MerchPurchase{
+		UserID:      firstUserDB.ID,
+		MerchItemID: merch.ID,
+		Price:       80,
+		CreatedAt:   gofakeit.PastDate(),
+	}))
+
+	req, err := http.NewRequest(http.MethodGet, infoPath, nil)
+	req.Header.Set("Authorization", "Bearer "+s.tokenStr)
+	s.Require().NoError(err)
+
+	rr := httptest.NewRecorder()
+	s.router.ServeHTTP(rr, req)
+
+	s.Equal(http.StatusOK, rr.Code)
+
+	var resp dto.InfoResponse
+
+	err = json.NewDecoder(rr.Body).Decode(&resp)
+	s.Require().NoError(err)
+	s.Equal(1000-merch.Price-80, resp.Coins)
+	s.Equal(1, resp.Inventory[0].Quantity)
+	s.Equal(merch.Name, resp.Inventory[0].Name)
 }
