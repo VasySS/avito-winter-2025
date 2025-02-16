@@ -13,7 +13,7 @@ type Repository struct {
 func New() (*Repository, error) {
 	cache, err := ristretto.NewCache(&ristretto.Config[string, any]{
 		NumCounters: 1e5,
-		MaxCost:     1 << 32,
+		MaxCost:     10_000,
 		BufferItems: 64,
 	})
 	if err != nil {
