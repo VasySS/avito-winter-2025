@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/VasySS/avito-winter-2025/internal/dto"
-
 	"github.com/go-chi/render"
 )
 
@@ -31,5 +30,7 @@ func (h *Handler) auth(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	render.JSON(w, r, token)
+	render.JSON(w, r, map[string]string{
+		"token": token,
+	})
 }

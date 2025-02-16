@@ -4,6 +4,7 @@ import "context"
 
 type TransactionManager interface {
 	RunReadCommitted(ctx context.Context, fn func(context.Context) error) error
+	RunRepeatableRead(ctx context.Context, fn func(context.Context) error) error
 	RunSerializable(ctx context.Context, fn func(context.Context) error) error
 	GetQueryEngine(ctx context.Context) QueryEngine
 }

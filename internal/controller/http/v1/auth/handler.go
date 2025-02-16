@@ -38,7 +38,7 @@ func respondWithError(
 	errMsg string,
 	err error,
 ) {
-	slog.Error(err.Error(), "handler", handlerName)
+	slog.Error(err.Error(), "auth-handler", handlerName)
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(statusCode)

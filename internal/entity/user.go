@@ -6,8 +6,9 @@ import (
 )
 
 var (
-	ErrUserNotFound         = errors.New("user not found")
-	ErrUserTransferNotFound = errors.New("user transfer not found")
+	ErrUserNotFound     = errors.New("user not found")
+	ErrSameTransferUser = errors.New("can't send coin to the same user")
+	ErrLowBalance       = errors.New("not enough coins")
 )
 
 type User struct {

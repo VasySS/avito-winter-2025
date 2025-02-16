@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/VasySS/avito-winter-2025/internal/entity"
-
 	"github.com/georgysavva/scany/v2/pgxscan"
 	"github.com/jackc/pgx/v5"
 )

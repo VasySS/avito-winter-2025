@@ -36,6 +36,15 @@ func (tm *TxManager) RunReadCommitted(ctx context.Context, fn func(context.Conte
 	return tm.beginFunc(ctx, opts, fn)
 }
 
+func (tm *TxManager) RunRepeatableRead(ctx context.Context, fn func(context.Context) error) error {
+	opts := pgx.TxOptions{
+		IsoLevel:   pgx.RepeatableRead,
+		AccessMode: pgx.ReadWrite,
+	}
+
+	return tm.beginFunc(ctx, opts, fn)
+}
+
 func (tm *TxManager) RunSerializable(ctx context.Context, fn func(context.Context) error) error {
 	opts := pgx.TxOptions{
 		IsoLevel:   pgx.Serializable,

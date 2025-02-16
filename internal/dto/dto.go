@@ -7,3 +7,10 @@ type AuthUser struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 }
+
+type CoinSend struct {
+	CurTime  time.Time
+	FromUser string
+	ToUser   string `json:"toUser"`
+	Amount   int    `json:"amount"`
+}

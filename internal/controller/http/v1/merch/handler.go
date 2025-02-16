@@ -1,16 +1,18 @@
 package merch
 
 import (
+	"context"
 	"log/slog"
 	"net/http"
 
+	"github.com/VasySS/avito-winter-2025/internal/dto"
 	"github.com/go-chi/chi/v5"
 )
 
 type Usecase interface {
-	Info() error
-	SendCoin() error
-	BuyItem(item string) error
+	Info(ctx context.Context) error
+	SendCoin(ctx context.Context, req dto.CoinSend) error
+	BuyItem(ctx context.Context, item string) error
 }
 
 type Handler struct {
@@ -40,7 +42,7 @@ func respondWithError(
 	errMsg string,
 	err error,
 ) {
-	slog.Error(err.Error(), "handler", handlerName)
+	slog.Error(err.Error(), "merch-handler", handlerName)
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(statusCode)
