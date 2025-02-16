@@ -21,7 +21,9 @@ RUN apk add --no-cache ca-certificates curl && update-ca-certificates
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 USER appuser
 
-HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 CMD [ "curl", "-f", "http://localhost:4174/health" ]
+ARG SERVER_PORT
+ENV SERVER_PORT $SERVER_PORT
+HEALTHCHECK --start-period=10s CMD curl -f "http://localhost:${SERVER_PORT}/health" || exit 1
 
-EXPOSE 8080
+EXPOSE $SERVER_PORT
 ENTRYPOINT ["./main"]
