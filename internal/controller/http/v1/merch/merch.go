@@ -1,10 +1,12 @@
 package merch
 
 import (
+	"errors"
 	"net/http"
 	"time"
 
 	"github.com/VasySS/avito-winter-2025/internal/dto"
+	"github.com/VasySS/avito-winter-2025/internal/entity"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 )
@@ -50,10 +52,18 @@ func (h *Handler) sendCoin(w http.ResponseWriter, r *http.Request) {
 	req.FromUser = senderUsername
 	req.CurTime = time.Now().UTC()
 
-	if err := h.usecase.SendCoin(ctx, req); err != nil {
-		respondWithError(w, http.StatusBadRequest, sendCoinHandlerName, "failed to send coins", err)
+	err := h.usecase.SendCoin(ctx, req)
+	if errors.Is(err, entity.ErrLowBalance) {
+		respondWithError(w, http.StatusBadRequest, sendCoinHandlerName, err.Error(), err)
 		return
 	}
+
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, sendCoinHandlerName, "failed to send coins", err)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
 }
 
 func (h *Handler) buyItem(w http.ResponseWriter, r *http.Request) {
@@ -76,8 +86,19 @@ func (h *Handler) buyItem(w http.ResponseWriter, r *http.Request) {
 		MerchName: merchName,
 	}
 
-	if err := h.usecase.BuyItem(ctx, req); err != nil {
-		respondWithError(w, http.StatusBadRequest, buyItemHandlerName, "failed to buy item", err)
+	err := h.usecase.BuyItem(ctx, req)
+	if errors.Is(err, entity.ErrLowBalance) {
+		respondWithError(w, http.StatusBadRequest, buyItemHandlerName, err.Error(), err)
+		return
+	}
+
+	if errors.Is(err, entity.ErrSameTransferUser) {
+		respondWithError(w, http.StatusBadRequest, buyItemHandlerName, err.Error(), err)
+		return
+	}
+
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, buyItemHandlerName, "failed to buy item", err)
 		return
 	}
 
