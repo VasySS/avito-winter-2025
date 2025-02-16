@@ -6,7 +6,6 @@ import (
 
 	"github.com/VasySS/avito-winter-2025/internal/dto"
 	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/jwtauth/v5"
 	"github.com/go-chi/render"
 )
 
@@ -15,20 +14,29 @@ const (
 )
 
 func (h *Handler) info(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	username := getUsernameFromCtx(ctx, w)
+	if username == "" {
+		return
+	}
+
+	// TODO - add limiter
+
+	resp, err := h.usecase.Info(ctx, username)
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, sendCoinHandlerName, "failed to get info", err)
+		return
+	}
+
+	render.JSON(w, r, resp)
 }
 
 func (h *Handler) sendCoin(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	_, claims, err := jwtauth.FromContext(ctx)
-	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, sendCoinHandlerName, "failed to get claims", err)
-		return
-	}
-
-	senderUsername, ok := claims["username"].(string)
-	if !ok {
-		respondWithError(w, http.StatusInternalServerError, sendCoinHandlerName, "failed to get sender username", nil)
+	senderUsername := getUsernameFromCtx(ctx, w)
+	if senderUsername == "" {
 		return
 	}
 
@@ -51,15 +59,8 @@ func (h *Handler) sendCoin(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) buyItem(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	_, claims, err := jwtauth.FromContext(ctx)
-	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, sendCoinHandlerName, "failed to get claims", err)
-		return
-	}
-
-	username, ok := claims["username"].(string)
-	if !ok {
-		respondWithError(w, http.StatusInternalServerError, sendCoinHandlerName, "failed to get username", nil)
+	username := getUsernameFromCtx(ctx, w)
+	if username == "" {
 		return
 	}
 

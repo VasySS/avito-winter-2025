@@ -70,6 +70,16 @@ func (u *Usecase) SendCoin(ctx context.Context, req dto.CoinSend) error {
 	return nil
 }
 
-func (u *Usecase) Info(ctx context.Context) error {
-	return nil
+func (u *Usecase) Info(ctx context.Context, username string) (dto.InfoResponse, error) {
+	user, err := u.repo.GetUserByUsername(ctx, username)
+	if err != nil {
+		return dto.InfoResponse{}, err
+	}
+
+	resp, err := u.repo.Info(ctx, user.ID)
+	if err != nil {
+		return dto.InfoResponse{}, err
+	}
+
+	return resp, nil
 }

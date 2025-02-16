@@ -3,6 +3,7 @@ package merch
 import (
 	"context"
 
+	"github.com/VasySS/avito-winter-2025/internal/dto"
 	"github.com/VasySS/avito-winter-2025/internal/entity"
 )
 
@@ -12,6 +13,7 @@ type Repository interface {
 	SendCoins(ctx context.Context, req entity.UserTransfer) error
 	GetMerch(ctx context.Context, name string) (entity.Merch, error)
 	BuyMerch(ctx context.Context, req entity.MerchPurchase) error
+	Info(ctx context.Context, userID int64) (dto.InfoResponse, error)
 }
 
 type Usecase struct {

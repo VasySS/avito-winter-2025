@@ -5,6 +5,7 @@ package mocks
 import (
 	context "context"
 
+	dto "github.com/VasySS/avito-winter-2025/internal/dto"
 	entity "github.com/VasySS/avito-winter-2025/internal/entity"
 
 	mock "github.com/stretchr/testify/mock"
@@ -82,6 +83,34 @@ func (_m *Repository) GetUserByUsername(ctx context.Context, username string) (e
 
 	if rf, ok := ret.Get(1).(func(context.Context, string) error); ok {
 		r1 = rf(ctx, username)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// Info provides a mock function with given fields: ctx, userID
+func (_m *Repository) Info(ctx context.Context, userID int64) (dto.InfoResponse, error) {
+	ret := _m.Called(ctx, userID)
+
+	if len(ret) == 0 {
+		panic("no return value specified for Info")
+	}
+
+	var r0 dto.InfoResponse
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, int64) (dto.InfoResponse, error)); ok {
+		return rf(ctx, userID)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, int64) dto.InfoResponse); ok {
+		r0 = rf(ctx, userID)
+	} else {
+		r0 = ret.Get(0).(dto.InfoResponse)
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, int64) error); ok {
+		r1 = rf(ctx, userID)
 	} else {
 		r1 = ret.Error(1)
 	}

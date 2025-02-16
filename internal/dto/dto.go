@@ -20,3 +20,29 @@ type MerchPurchase struct {
 	Username  string
 	MerchName string
 }
+
+type InventoryItem struct {
+	Name     string `json:"name"`
+	Quantity int    `json:"quantity"`
+}
+
+type CoinTransferReceived struct {
+	FromUser string `json:"fromUser"`
+	Amount   int    `json:"amount"`
+}
+
+type CoinTransferSent struct {
+	ToUser string `json:"toUser"`
+	Amount int    `json:"amount"`
+}
+
+type CoinHistory struct {
+	Received []CoinTransferReceived `json:"received"`
+	Sent     []CoinTransferSent     `json:"sent"`
+}
+
+type InfoResponse struct {
+	Coins       int             `json:"coins"`
+	Inventory   []InventoryItem `json:"inventory"`
+	CoinHistory CoinHistory     `json:"coinHistory"`
+}

@@ -209,3 +209,83 @@ func TestUsecase_BuyItem(t *testing.T) {
 		})
 	}
 }
+
+func TestUsecase_Info(t *testing.T) {
+	t.Parallel()
+
+	resp := dto.InfoResponse{
+		Coins: 1000,
+		Inventory: []dto.InventoryItem{
+			{Name: "item1", Quantity: 1},
+		},
+		CoinHistory: dto.CoinHistory{
+			Received: []dto.CoinTransferReceived{
+				{FromUser: "user2", Amount: 100},
+			},
+			Sent: []dto.CoinTransferSent{
+				{ToUser: "user2", Amount: 100},
+			},
+		},
+	}
+
+	type fields struct {
+		repo *mocks.Repository
+	}
+
+	tests := []struct {
+		name    string
+		fields  fields
+		input   string
+		setup   func(f *fields, inp string)
+		want    dto.InfoResponse
+		wantErr assert.ErrorAssertionFunc
+	}{
+		{
+			name: "successful get",
+			fields: fields{
+				repo: mocks.NewRepository(t),
+			},
+			input: "user1",
+			setup: func(f *fields, inp string) {
+				f.repo.On("GetUserByUsername", t.Context(), inp).
+					Return(entity.User{ID: 1, Username: inp}, nil).Once()
+				f.repo.On("Info", t.Context(), int64(1)).
+					Return(resp, nil).Once()
+			},
+			want:    resp,
+			wantErr: assert.NoError,
+		},
+		{
+			name: "unsuccessful get",
+			fields: fields{
+				repo: mocks.NewRepository(t),
+			},
+			input: "user1",
+			setup: func(f *fields, inp string) {
+				f.repo.On("GetUserByUsername", t.Context(), inp).
+					Return(entity.User{ID: 1, Username: inp}, nil).Once()
+				f.repo.On("Info", t.Context(), int64(1)).
+					Return(dto.InfoResponse{}, assert.AnError).Once()
+			},
+			want:    dto.InfoResponse{},
+			wantErr: assert.Error,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			fs := tt.fields
+			uc := merch.New(
+				fs.repo,
+			)
+
+			tt.setup(&fs, tt.input)
+
+			got, err := uc.Info(t.Context(), tt.input)
+			tt.wantErr(t, err)
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}

@@ -2,8 +2,10 @@ package postgres
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 
+	"github.com/VasySS/avito-winter-2025/internal/dto"
 	"github.com/VasySS/avito-winter-2025/internal/entity"
 	"github.com/georgysavva/scany/v2/pgxscan"
 	"github.com/jackc/pgx/v5"
@@ -112,4 +114,57 @@ func (r *Repository) BuyMerch(ctx context.Context, req entity.MerchPurchase) err
 	}
 
 	return nil
+}
+
+func (r *Repository) Info(ctx context.Context, userID int64) (dto.InfoResponse, error) {
+	tx := r.txManager.GetQueryEngine(ctx)
+
+	query := `
+		SELECT json_build_object(
+			'coins', (SELECT balance FROM user_info WHERE id = $1),
+
+			'inventory', COALESCE((
+				SELECT json_agg(json_build_object('name', mi.name, 'quantity', purchases.amount))
+				FROM (
+					SELECT merch_item_id, COUNT(*) AS amount
+					FROM merch_purchase
+					WHERE user_id = $1
+					GROUP BY merch_item_id
+				) AS purchases
+				JOIN merch_item mi ON purchases.merch_item_id = mi.id
+			), '[]'::json),
+
+			'coinHistory', json_build_object(
+				'received', COALESCE((
+					SELECT json_agg(json_build_object('fromUser', ui.username, 'amount', amount))
+					FROM user_transfer
+					JOIN user_info AS ui 
+						ON sender_user_id = ui.id
+					WHERE receiver_user_id = $1
+				), '[]'::json),
+
+				'sent', COALESCE((
+					SELECT json_agg(json_build_object('toUser', ui.username, 'amount', amount))
+					FROM user_transfer
+					JOIN user_info AS ui 
+						ON receiver_user_id = ui.id
+					WHERE sender_user_id = $1
+				), '[]'::json)
+			)
+		) AS data;
+	`
+
+	var data []byte
+
+	if err := tx.QueryRow(ctx, query, userID).Scan(&data); err != nil {
+		return dto.InfoResponse{}, fmt.Errorf("failed to get info: %w", err)
+	}
+
+	var resp dto.InfoResponse
+
+	if err := json.Unmarshal(data, &resp); err != nil {
+		return dto.InfoResponse{}, fmt.Errorf("failed to unmarshal info: %w", err)
+	}
+
+	return resp, nil
 }
