@@ -21,8 +21,6 @@ func (h *Handler) info(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// TODO - add limiter
-
 	resp, err := h.usecase.Info(ctx, username)
 	if err != nil {
 		respondWithError(w, http.StatusBadRequest, sendCoinHandlerName, "failed to get info", err)
